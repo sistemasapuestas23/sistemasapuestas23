@@ -15,10 +15,17 @@ class DixonColesPoisson:
         self.params_: Dict = {}
         self.teams_: list = []
 
-    def _log_likelihood(self, theta: np.ndarray, home_goals: np.ndarray, away_goals: np.ndarray,
-                        home_idx: np.ndarray, away_idx: np.ndarray, n_teams: int) -> float:
+    def _log_likelihood(
+        self,
+        theta: np.ndarray,
+        home_goals: np.ndarray,
+        away_goals: np.ndarray,
+        home_idx: np.ndarray,
+        away_idx: np.ndarray,
+        n_teams: int,
+    ) -> float:
         attack = theta[:n_teams]
-        defence = theta[n_teams:2 * n_teams]
+        defence = theta[n_teams : 2 * n_teams]
         home_adv = theta[2 * n_teams]
         rho = theta[2 * n_teams + 1]
         mu_h = np.exp(attack[home_idx] + defence[away_idx] + home_adv)
@@ -36,8 +43,13 @@ class DixonColesPoisson:
         ll = ll + np.log(np.clip(tau, 1e-10, None))
         return -np.sum(ll)
 
-    def fit(self, home_team: np.ndarray, away_team: np.ndarray,
-            home_goals: np.ndarray, away_goals: np.ndarray) -> "DixonColesPoisson":
+    def fit(
+        self,
+        home_team: np.ndarray,
+        away_team: np.ndarray,
+        home_goals: np.ndarray,
+        away_goals: np.ndarray,
+    ) -> "DixonColesPoisson":
         teams = np.unique(np.concatenate([home_team, away_team]))
         self.teams_ = list(teams)
         team_to_idx = {t: i for i, t in enumerate(teams)}
@@ -46,7 +58,7 @@ class DixonColesPoisson:
         away_idx = np.array([team_to_idx[t] for t in away_team])
         theta0 = np.zeros(2 * n + 2)
         theta0[:n] = 0.1
-        theta0[n:2 * n] = -0.1
+        theta0[n : 2 * n] = -0.1
         theta0[2 * n] = 0.3
         theta0[2 * n + 1] = -0.1
         res = minimize(
@@ -57,10 +69,12 @@ class DixonColesPoisson:
             options={"maxiter": self.max_iter},
         )
         if not res.success:
-            logger.warning("Dixon-Coles optimization did not fully converge: %s", res.message)
+            logger.warning(
+                "Dixon-Coles optimization did not fully converge: %s", res.message
+            )
         self.params_ = {
             "attack": res.x[:n],
-            "defence": res.x[n:2 * n],
+            "defence": res.x[n : 2 * n],
             "home_adv": res.x[2 * n],
             "rho": res.x[2 * n + 1],
             "team_to_idx": team_to_idx,

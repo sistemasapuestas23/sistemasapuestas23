@@ -27,8 +27,14 @@ class FeatureBuilder:
         df = compute_elo(df)
 
         value_cols = [
-            "home_goals", "away_goals", "home_xg", "away_xg",
-            "home_shots", "away_shots", "home_possession", "away_possession",
+            "home_goals",
+            "away_goals",
+            "home_xg",
+            "away_xg",
+            "home_shots",
+            "away_shots",
+            "home_possession",
+            "away_possession",
         ]
         for col in value_cols:
             if col not in df.columns:
@@ -56,11 +62,23 @@ class FeatureBuilder:
             df["implied_away"] /= total_imp
 
         feature_cols = [
-            c for c in df.columns
-            if any(k in c for k in [
-                "elo", "roll_mean", "roll_std", "form", "goal_diff",
-                "xg", "shots", "possession", "implied", "player"
-            ])
+            c
+            for c in df.columns
+            if any(
+                k in c
+                for k in [
+                    "elo",
+                    "roll_mean",
+                    "roll_std",
+                    "form",
+                    "goal_diff",
+                    "xg",
+                    "shots",
+                    "possession",
+                    "implied",
+                    "player",
+                ]
+            )
         ]
         self.feature_columns = feature_cols
         X = df[feature_cols].fillna(0.0)

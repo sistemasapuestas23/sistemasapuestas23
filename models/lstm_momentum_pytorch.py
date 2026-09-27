@@ -8,10 +8,20 @@ from config.settings import LSTM_HIDDEN, LSTM_LAYERS, LSTM_MOMENTUM_WINDOW, RAND
 
 
 class LSTMMomentumModel(nn.Module):
-    def __init__(self, input_dim: int, hidden: int = LSTM_HIDDEN, layers: int = LSTM_LAYERS, num_classes: int = 3):
+    def __init__(
+        self,
+        input_dim: int,
+        hidden: int = LSTM_HIDDEN,
+        layers: int = LSTM_LAYERS,
+        num_classes: int = 3,
+    ):
         super().__init__()
         self.lstm = nn.LSTM(
-            input_dim, hidden, layers, batch_first=True, dropout=0.2 if layers > 1 else 0.0
+            input_dim,
+            hidden,
+            layers,
+            batch_first=True,
+            dropout=0.2 if layers > 1 else 0.0,
         )
         self.fc = nn.Sequential(
             nn.Linear(hidden, hidden // 2),
@@ -29,8 +39,13 @@ class LSTMMomentumModel(nn.Module):
 
 class LSTMMomentumClassifier(BaseEstimator, ClassifierMixin):
     def __init__(
-        self, window: int = LSTM_MOMENTUM_WINDOW, hidden: int = LSTM_HIDDEN,
-        layers: int = LSTM_LAYERS, epochs: int = 40, batch_size: int = 64, lr: float = 1e-3
+        self,
+        window: int = LSTM_MOMENTUM_WINDOW,
+        hidden: int = LSTM_HIDDEN,
+        layers: int = LSTM_LAYERS,
+        epochs: int = 40,
+        batch_size: int = 64,
+        lr: float = 1e-3,
     ):
         self.window = window
         self.hidden = hidden
@@ -62,7 +77,9 @@ class LSTMMomentumClassifier(BaseEstimator, ClassifierMixin):
         y_t = torch.tensor(y, dtype=torch.long)
         dataset = TensorDataset(X_t, y_t)
         loader = DataLoader(dataset, batch_size=self.batch_size, shuffle=True)
-        self.model_ = LSTMMomentumModel(X.shape[1], self.hidden, self.layers).to(self.device)
+        self.model_ = LSTMMomentumModel(X.shape[1], self.hidden, self.layers).to(
+            self.device
+        )
         criterion = nn.CrossEntropyLoss()
         optimizer = optim.Adam(self.model_.parameters(), lr=self.lr)
         self.model_.train()

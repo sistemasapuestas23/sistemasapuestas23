@@ -27,7 +27,13 @@ class DNNModel(nn.Module):
 
 
 class DNNClassifier(BaseEstimator, ClassifierMixin):
-    def __init__(self, hidden: list = None, epochs: int = 50, batch_size: int = 64, lr: float = 1e-3):
+    def __init__(
+        self,
+        hidden: list = None,
+        epochs: int = 50,
+        batch_size: int = 64,
+        lr: float = 1e-3,
+    ):
         self.hidden = hidden or DNN_HIDDEN
         self.epochs = epochs
         self.batch_size = batch_size

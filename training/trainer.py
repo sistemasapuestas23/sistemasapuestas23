@@ -43,10 +43,14 @@ class FullTrainer:
         poisson = DixonColesPoisson()
         for train_idx, val_idx in temporal_split_generator(n):
             poisson.fit(
-                home_team[train_idx], away_team[train_idx],
-                home_goals[train_idx], away_goals[train_idx],
+                home_team[train_idx],
+                away_team[train_idx],
+                home_goals[train_idx],
+                away_goals[train_idx],
             )
-            oof[val_idx, 0:3] = poisson.predict_proba(home_team[val_idx], away_team[val_idx])
+            oof[val_idx, 0:3] = poisson.predict_proba(
+                home_team[val_idx], away_team[val_idx]
+            )
         poisson.fit(home_team, away_team, home_goals, away_goals)
         self.models["poisson"] = poisson
 
@@ -63,7 +67,9 @@ class FullTrainer:
             model = Cls()
             for train_idx, val_idx in temporal_split_generator(n):
                 model.fit(X_np[train_idx], y_np[train_idx])
-                oof[val_idx, m_idx * 3 : (m_idx + 1) * 3] = model.predict_proba(X_np[val_idx])
+                oof[val_idx, m_idx * 3 : (m_idx + 1) * 3] = model.predict_proba(
+                    X_np[val_idx]
+                )
             model.fit(X_np, y_np)
             self.models[name] = model
 

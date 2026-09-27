@@ -36,19 +36,25 @@ class TheStatsAPIClient:
             }
         )
 
-    def _request(self, endpoint: str, params: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def _request(
+        self, endpoint: str, params: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
         self.limiter.acquire()
         url = f"{self.base_url}/{endpoint.lstrip('/')}"
         response = self.session.get(url, params=params, timeout=45)
         if response.status_code == 429:
             retry_after = int(response.headers.get("Retry-After", "5"))
-            logger.warning("Rate limited by TheStatsAPI. Sleeping %s seconds", retry_after)
+            logger.warning(
+                "Rate limited by TheStatsAPI. Sleeping %s seconds", retry_after
+            )
             time.sleep(retry_after)
             return self._request(endpoint, params)
         response.raise_for_status()
         return response.json()
 
-    def get_competitions(self, page: int = 1, per_page: int = 100, country: Optional[str] = None) -> Dict[str, Any]:
+    def get_competitions(
+        self, page: int = 1, per_page: int = 100, country: Optional[str] = None
+    ) -> Dict[str, Any]:
         params = {"page": page, "per_page": per_page}
         if country:
             params["country"] = country
@@ -110,13 +116,17 @@ class TheStatsAPIClient:
     def get_player(self, player_id: str) -> Dict[str, Any]:
         return self._request(f"football/players/{player_id}")
 
-    def get_player_stats(self, player_id: str, season_id: Optional[str] = None) -> Dict[str, Any]:
+    def get_player_stats(
+        self, player_id: str, season_id: Optional[str] = None
+    ) -> Dict[str, Any]:
         params = {}
         if season_id:
             params["season_id"] = season_id
         return self._request(f"football/players/{player_id}/stats", params)
 
-    def get_team_stats(self, team_id: str, season_id: Optional[str] = None) -> Dict[str, Any]:
+    def get_team_stats(
+        self, team_id: str, season_id: Optional[str] = None
+    ) -> Dict[str, Any]:
         params = {}
         if season_id:
             params["season_id"] = season_id
@@ -125,11 +135,16 @@ class TheStatsAPIClient:
     def get_team_players(self, team_id: str) -> Dict[str, Any]:
         return self._request(f"football/teams/{team_id}/players")
 
-    def get_standings(self, competition_id: str, season_id: str, group: Optional[str] = None) -> Dict[str, Any]:
+    def get_standings(
+        self, competition_id: str, season_id: str, group: Optional[str] = None
+    ) -> Dict[str, Any]:
         params = {}
         if group:
             params["group"] = group
-        return self._request(f"football/competitions/{competition_id}/seasons/{season_id}/standings", params)
+        return self._request(
+            f"football/competitions/{competition_id}/seasons/{season_id}/standings",
+            params,
+        )
 
     def close(self) -> None:
         self.session.close()

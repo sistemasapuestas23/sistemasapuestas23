@@ -8,10 +8,20 @@ from config.settings import LSTM_HIDDEN, LSTM_LAYERS, RANDOM_SEED
 
 
 class LSTMModel(nn.Module):
-    def __init__(self, input_dim: int, hidden: int = LSTM_HIDDEN, layers: int = LSTM_LAYERS, num_classes: int = 3):
+    def __init__(
+        self,
+        input_dim: int,
+        hidden: int = LSTM_HIDDEN,
+        layers: int = LSTM_LAYERS,
+        num_classes: int = 3,
+    ):
         super().__init__()
         self.lstm = nn.LSTM(
-            input_dim, hidden, layers, batch_first=True, dropout=0.2 if layers > 1 else 0.0
+            input_dim,
+            hidden,
+            layers,
+            batch_first=True,
+            dropout=0.2 if layers > 1 else 0.0,
         )
         self.fc = nn.Linear(hidden, num_classes)
 
@@ -22,8 +32,12 @@ class LSTMModel(nn.Module):
 
 class LSTMClassifier(BaseEstimator, ClassifierMixin):
     def __init__(
-        self, hidden: int = LSTM_HIDDEN, layers: int = LSTM_LAYERS,
-        epochs: int = 40, batch_size: int = 64, lr: float = 1e-3
+        self,
+        hidden: int = LSTM_HIDDEN,
+        layers: int = LSTM_LAYERS,
+        epochs: int = 40,
+        batch_size: int = 64,
+        lr: float = 1e-3,
     ):
         self.hidden = hidden
         self.layers = layers

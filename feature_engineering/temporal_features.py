@@ -13,13 +13,11 @@ def compute_rolling_stats(
     df = df.sort_values(["date", group_col]).copy()
     for col in value_cols:
         for w in windows:
-            df[f"{col}_roll_mean_{w}"] = (
-                df.groupby(group_col)[col]
-                .transform(lambda x: x.shift(1).rolling(w, min_periods=1).mean())
+            df[f"{col}_roll_mean_{w}"] = df.groupby(group_col)[col].transform(
+                lambda x: x.shift(1).rolling(w, min_periods=1).mean()
             )
-            df[f"{col}_roll_std_{w}"] = (
-                df.groupby(group_col)[col]
-                .transform(lambda x: x.shift(1).rolling(w, min_periods=1).std())
+            df[f"{col}_roll_std_{w}"] = df.groupby(group_col)[col].transform(
+                lambda x: x.shift(1).rolling(w, min_periods=1).std()
             )
     return df
 
